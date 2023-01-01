@@ -3,7 +3,7 @@ const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 module.exports = {
     data: new SlashCommandBuilder()
 		.setName('ping')
-		.setDescription('🏓Check bot\'s latency!'),
+		.setDescription('🏓 Check bot\'s latency!'),
     run: async (client, interaction) => {
       let pembed = new EmbedBuilder()
 		  .setColor('#2F3136')	
