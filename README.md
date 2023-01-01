@@ -58,6 +58,6 @@ Distributed under the MIT License. See [LICENSE](https://github.com/Nishant1500/
 
 ## Acknowledgements
 
-* [ZeroDiscord](https://github.com/ZeroDiscord/): For the base template code fro this bot.
+* [ZeroDiscord](https://github.com/ZeroDiscord/): For the base template code for this bot.
 * [Othneil Drew](https://github.com/othneildrew/Best-README-Template)
 * [ImgShields](https://shields.io/)
