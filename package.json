@@ -1,0 +1,18 @@
+{
+  "name": "GiftsBot",
+  "version": "1.0.1",
+  "description": "Gifts Discord Bot is a useful tool for Discord servers looking to host giveaways and engage their community.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "discord-giveaways": "^6.0.1",
+    "discord.js": "^14.6.0",
+    "forever-monitor": "^3.0.3",
+    "ms": "^3.0.0-canary.1",
+    "parsec": "^2.0.2",
+    "topgg-autoposter": "^2.0.1",
+  },
+}

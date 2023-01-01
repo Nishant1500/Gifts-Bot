@@ -1,0 +1,8 @@
+.env
+slash_back
+storage
+.upm/
+.config/
+.replit
+replit.nix
+node_modules/
