@@ -32,7 +32,7 @@ module.exports = async (client, interaction) => {
     });
     try {
       command.run(client, interaction);
-      console.log(chalk.hex('#FFAC1C')('[Usage]') + interaction.user.tag + ' used ' + chalk.blue('/'+ interaction.commandName) + ' in ' + chalk.blue(interaction.guild.name))
+      console.log(chalk.hex('#FFAC1C')('[Usage] ') + interaction.user.tag + ' used ' + chalk.blue('/'+ (interaction.options.getSubcommand()?(interaction.commandName+ ' '+ interaction.options.getSubcommand()): interaction.commandName)) + ' in ' + chalk.blue(interaction.guild.name) + chalk.greenBright(`[${interaction.guild.id}]`))
     } catch (err) {
       console.log(chalk.hex('#FFAC1C')(`${err}`))
       console.log(chalk.red(`${err.stack.replace(`${err}`, '')}`))
