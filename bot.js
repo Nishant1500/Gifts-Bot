@@ -135,6 +135,8 @@ process.on('unhandledRejection', error => {
   client.interactions = new Discord.Collection();
 // creating an empty array for registering slash commands
 client.slashArr = []
+client.slashPrivateArr = []
+client.modalHandlers = new Discord.Collection();
 /* Load all slash commands */
 fs.readdir("./slash/", (_err, files) => {
   files.forEach(file => {
@@ -142,7 +144,18 @@ fs.readdir("./slash/", (_err, files) => {
     let props = require(`./slash/${file}`);
     let commandName = file.split(".")[0];
     client.interactions.set(commandName, props);
-    client.slashArr.push(props.data)
+    if(props.private === true) {
+      client.slashPrivateArr.push(props.data)
+    } else client.slashArr.push(props.data)
+  });
+});
+
+fs.readdir("./modalHandler/", (_err, files) => {
+  files.forEach(file => {
+    if (!file.endsWith(".js")) return;
+    let props = require(`./modalHandler/${file}`);
+    let handlerName = file.split(".")[0];
+    client.modalHandlers.set(handlerName, props);
   });
 });
 
