@@ -58,6 +58,7 @@ Distributed under the MIT License. See [LICENSE](https://github.com/Nishant1500/
 
 ## Acknowledgements
 
+* [Androz2091](https://github.com/Androz2091/discord-giveaways): For making such an awesome package :)
 * [ZeroDiscord](https://github.com/ZeroDiscord/): For the base template code for this bot.
 * [Othneil Drew](https://github.com/othneildrew/Best-README-Template)
 * [ImgShields](https://shields.io/)
