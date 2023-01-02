@@ -1,4 +1,4 @@
-const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
+const { EmbedBuilder, SlashCommandBuilder, PermissionsBitField } = require('discord.js');
 const ms = require("ms")
 const messages = require("../utils/message");
 
@@ -27,7 +27,7 @@ module.exports = {
       const sub = interaction.options.getSubcommand();
       if(sub == "start") {
 
-        if (!interaction.member.permissions.has('MANAGE_MESSAGES') && !interaction.member.roles.cache.some((r) => r.name === "Giveaways")) {
+        if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages) && !interaction.member.roles.cache.some((r) => r.name === "Giveaways")) {
       return interaction.reply({
         content: ':x: You need to have the manage messages permissions to start giveaways.',
         ephemeral: true
@@ -93,7 +93,7 @@ if(isNaN(ms(giveawayDuration))) return interaction.reply({
         
       } else if(sub == "reroll") {
 
-        if (!interaction.member.permissions.has('MANAGE_MESSAGES') && !interaction.member.roles.cache.some((r) => r.name === "Giveaways")) return interaction.reply({
+        if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages) && !interaction.member.roles.cache.some((r) => r.name === "Giveaways")) return interaction.reply({
                 content: ':x: You need to have the manage messages permission to reroll giveaways.',
                 ephemeral: true
             });
@@ -117,13 +117,13 @@ if(isNaN(ms(giveawayDuration))) return interaction.reply({
 
         if (!giveaway.ended) {
             return interaction.reply({
-                content: `[This Giveaway](https://discord.com/channels/${giveaway.guildId}/${giveaway.channelId}/${giveaway.messageId}) has not been ended yet`,
+                content: `[This Giveaway](https://discord.com/channels/${giveaway.guildId}/${giveaway.channelId}/${giveaway.messageId}) has not ended yet`,
                 ephemeral: true
             });
         }
 
         // Reroll the giveaway
-        client.giveawaysManager.reroll(giveaway.messageId)
+        giveaway.reroll()
             .then(() => {
                 // Success message
                 interaction.reply(`Rerolled **[this giveaway](<https://discord.com/channels/${giveaway.guildId}/${giveaway.channelId}/${giveaway.messageId}>)!**`);

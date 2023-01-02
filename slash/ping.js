@@ -8,10 +8,10 @@ module.exports = {
       let pembed = new EmbedBuilder()
 		  .setColor('#2F3136')	
 		  .setTitle('Client Ping')
-		  .addFields({ name: '**Latency**', 
+		  .addFields({ name: '**Message Latency**', 
                    value: `\`${Date.now() - interaction.createdTimestamp}ms\``
                  })
-		  .addFields({ name: '**API Latency**', 
+		  .addFields({ name: '**Websocket Latency**', 
                    value: `\`${Math.round(client.ws.ping)}ms\``
                  })
 		  .setTimestamp()

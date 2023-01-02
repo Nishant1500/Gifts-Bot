@@ -2,6 +2,7 @@ const Discord = require("discord.js")
 const { Client, GatewayIntentBits, Partials } = require("discord.js");
 const { AutoPoster } = require('topgg-autoposter');
 const chalk = require('chalk');
+const giveawayModel = require('./schema/giveawayDatabase.js');
 
 const client = new Client({
   partials: [
@@ -26,11 +27,51 @@ ap.on('posted', () => {
   console.log('Posted stats to Top.gg!')
 })
 
+const mongoose = require('mongoose');
+mongoose.connect(process.env.MONGO_URI);
+const db = mongoose.connection;
+
+// Check the connection
+db.on('error', console.error.bind(console, 'Connection error:'));
+db.once('open', () => {
+    console.log(chalk.greenBright('[MongoDB]') + ' Connected to MongoDB.');
+});
+
+const { GiveawaysManager } = require("discord-giveaways");
+const GiveawayManager = class extends GiveawaysManager {
+    // This function is called when the manager needs to get all giveaways which are stored in the database.
+    async getAllGiveaways() {
+        // Get all giveaways from the database. We fetch all documents by passing an empty condition.
+        return await giveawayModel.find().lean().exec();
+    }
+
+    // This function is called when a giveaway needs to be saved in the database.
+    async saveGiveaway(messageId, giveawayData) {
+        // Add the new giveaway to the database
+        await giveawayModel.create(giveawayData);
+        // Don't forget to return something!
+        return true;
+    }
+
+    // This function is called when a giveaway needs to be edited in the database.
+    async editGiveaway(messageId, giveawayData) {
+        // Find by messageId and update it
+        await giveawayModel.updateOne({ messageId }, giveawayData).exec();
+        // Don't forget to return something!
+        return true;
+    }
+
+    // This function is called when a giveaway needs to be deleted from the database.
+    async deleteGiveaway(messageId) {
+        // Find by messageId and delete it
+        await giveawayModel.deleteOne({ messageId }).exec();
+        // Don't forget to return something!
+        return true;
+    }
+};
 
 // Initialise discord giveaways
-const { GiveawaysManager } = require("discord-giveaways");
-client.giveawaysManager = new GiveawaysManager(client, {
-  storage: "./storage/giveaways.json",
+client.giveawaysManager = new GiveawayManager(client, {
   default: {
     botsCanWin: false,
     embedColor: "#2F3136",
@@ -77,6 +118,7 @@ fs.readdir("./events/giveaways", async (_err, files) => {
     let eventName = file.split(".")[0];
     console.log(chalk.hex('#FFAC1C')('[GiveawayEvent]') + ` 🎉 Loaded: ${eventName}`);
     client.giveawaysManager.on(eventName, (...file) => event.execute(...file, client)), delete require.cache[require.resolve(`./events/giveaways/${file}`)];
+    fileCount += 1;
   })
 totalFileCount += fileCount
   if(fileCount = files.length) tt = true;
