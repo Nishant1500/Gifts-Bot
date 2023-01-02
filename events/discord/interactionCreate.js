@@ -26,12 +26,13 @@ module.exports = async (client, interaction) => {
     })
     
 
-    if (command.guildOnly) return interaction.reply({
+    if (command.guildOnly && !interaction.guild) return interaction.reply({
       content: `Use </${interaction.commandName}:1> in an actual server.`,
       ephemeral: true
     });
     try {
       command.run(client, interaction);
+      console.log(chalk.hex('#FFAC1C')('[Usage]') + interaction.user.tag + ' used ' + chalk.blue('/'+ interaction.commandName) + ' in ' + chalk.blue(interaction.guild.name))
     } catch (err) {
       console.log(chalk.hex('#FFAC1C')(`${err}`))
       console.log(chalk.red(`${err.stack.replace(`${err}`, '')}`))
