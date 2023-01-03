@@ -6,9 +6,15 @@ const secretSantaUserSchema = new mongoose.Schema(
     participants: [{
         userId: String,
         timestamp: {
-          type: [Number], default: Date.now()
+          type: Number, default: Date.now(),
         }
       }],
+    choosen: [{
+      userId: String,
+      recipientId: String
+    }],
+    startedBy: String,
+    started: {type: Boolean, default: false}
   },
 );
 

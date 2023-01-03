@@ -19,16 +19,15 @@ module.exports = async (client) => {
     try {
       console.log(chalk.blueBright('[SlashCommand]') + ` Started refreshing ${client.slashArr.length} application ` + chalk.blueBright.bold('/slash') + ` commands.`);
 
-      rest.put(Routes.applicationCommands(client.user.id), { body: [] })
+      /*rest.put(Routes.applicationCommands(client.user.id), { body: [] })
         .then(() => console.log(chalk.blueBright('[SlashCommand]') + ' Successfully deleted all application commands.'))
-        .catch(console.error);
+        .catch(console.error);*/
 
       const data = await rest.put(
         Routes.applicationCommands(client.user.id),
         { body: client.slashArr },
       );
-
-      await s.forEach(async (obj) => {
+      s.forEach(async (obj) => {
         const private = await rest.put(
           Routes.applicationGuildCommands(client.user.id, obj.guildId),
           { body: client.slashPrivateArr },
@@ -47,7 +46,7 @@ module.exports = async (client) => {
   console.log(chalk.greenBright('[Status]') + ` ${client.user.tag} is now online!`);
 
   client.user.setPresence({
-    activities: [{ name: `Giveaways on ${client.guilds.cache.size} servers`, type: ActivityType.Watching }],
+    activities: [{ name: `Giveaways on ${client.guilds.cache.size} servers`, type: ActivityType.Watching }/*{ name: `rip, reached daily slash limit (200)`, type: ActivityType.Watching }*/],
     status: 'online',
   });
 
