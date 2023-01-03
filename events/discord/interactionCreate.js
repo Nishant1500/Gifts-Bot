@@ -1,5 +1,6 @@
-const chalk = require('chalk')
-const whitelistedUserModel = require('../../schema/whitelistUser.js')
+const chalk = require('chalk');
+const { Collection } = require('discord.js');
+const whitelistedUserModel = require('../../schema/whitelistUser.js');
 
 module.exports = async (client, interaction) => {
   // Check if our interaction is a slash command
@@ -41,18 +42,21 @@ module.exports = async (client, interaction) => {
 		const timestamps = cooldowns.get(command.name);
 		const cooldownAmount = (command.cooldown || 3) * 1000;
 
-		if (timestamps.has(message.author.id)) {
-			const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
+		if (timestamps.has(interaction.user.id)) {
+			const expirationTime = timestamps.get(interaction.user.id) + cooldownAmount;
 
 			if (now < expirationTime) {
 				const timeLeft = (expirationTime - now) / 1000;
 				return interaction.reply({
 					content: `Please wait **${timeLeft.toFixed(
 						1
-					)}** more second(s) before reusing the \`${command.name}\` command.`,
+					)}** more second(s) before reusing the \`${interaction.commandName}\` command.`,
 				});
 			}
 		}
+
+    timestamps.set(interaction.user.id, now);
+		setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
     
     try {
       command.run(client, interaction);
