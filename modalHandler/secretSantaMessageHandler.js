@@ -15,7 +15,7 @@ module.exports = {
     
       const embed = new EmbedBuilder()
         .setTitle('Santa Mail 🦌🎁🎄')
-        .setDescription(`Message from you secret santa, Ho Ho Ho 🎄\n\n> You can send them one too using </secretsanta message:1>`)
+        .setDescription(`Message from your secret santa, Ho Ho Ho 🎄\n\n> You can send them one too using </secretsanta message:1>`)
         .addFields({
           name: 'Message',
           value: `${message}`

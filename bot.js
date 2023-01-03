@@ -20,6 +20,7 @@ const client = new Client({
 const fs = require("fs");
 const config = require("./config.js");
 client.config = config;
+client.cooldowns = new Discord.Collection();
 
 const ap = AutoPoster('Your Top.gg Token', client)
 

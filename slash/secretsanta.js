@@ -40,14 +40,41 @@ module.exports = {
             .setDescription('Your partner tag.')
             .setRequired(true)
         )
+    )
+    .addSubcommand(subcommand =>
+      subcommand.setName('profile')
+        .setDescription('Check your partner\'s profile for their wishlist')
+        .addUserOption(option =>
+          option.setName('user')
+            .setDescription('Your partner tag.')
+            .setRequired(true)
+        )
+    )
+    .addSubcommand(subcommand =>
+      subcommand.setName('setwishlist')
+        .setDescription('You can set you wishlist and give your partner a hint about what you want')
+        .addStringOption(option =>
+          option.setName('items')
+            .setDescription('Name of items you want, separeted by commas. ex. "Xbox, Lego, Snowman"')
+            .setRequired(true)
+        )
+    )
+    .addSubcommand(subcommand =>
+      subcommand.setName('end')
+        .setDescription('End the ongoing event.')
+        .addBooleanOption(option =>
+          option.setName('notify')
+            .setDescription('If true then notifies the participants that the event ended.')
+            .setRequired(true)
+        ),
     ),
   guildOnly: true,
   private: false,
   run: async (client, interaction) => {
-    const whitelistedUser = await whitelistedUserModel.findOne({ id: interaction.user.id });
+    /* const whitelistedUser = await whitelistedUserModel.findOne({ id: interaction.user.id });
     if (!whitelistedUser) return interaction.reply({
       content: "🎅 Ho Ho Ho, This feature is still in testing. Come back soon!"
-    })
+    })*/
     let guildModel;
 
     guildModel = await secretSantaUserModel.findOne({ guildId: interaction.guild.id })
@@ -126,12 +153,12 @@ module.exports = {
 
       const startedEmbed = new EmbedBuilder()
         .setTitle('🎄 Ho Ho Ho')
-        .setDescription(`Event Started! Slowly people will be getting an announcement in thier respective DMs.\n\n🎅 Total Participants: ${guildModel.participants.length}\n> Use </secretsanta list:1> for the updated list.`)
+        .setDescription(`Event Started! Slowly people will be getting an announcement in their respective DMs.\n\n🎅 Total Participants: ${guildModel.participants.length}\n> Use </secretsanta list:1> for the updated list.`)
 
       const startedUserEmbed = (u) => {
         const build = new EmbedBuilder()
           .setTitle('🎄 Ho Ho Ho')
-          .setDescription(`You have been choosen as a 🎅🏻 secret santa for <@${u.id}>[(${u.user.tag})](https://discord.com/users/${u.id}/). Be extra sneaky or else they will know...\n\nAnyways, Good luck! 🎄`)
+          .setDescription(`You have been choosen as a 🎅🏻 secret santa for <@${u.id}>[(${u.user.tag})](https://discord.com/users/${u.id}/). Be extra sneaky or else they will know...\n\n> **Tip: **You can give hints (~~or directly say it lol, depends upon you \:D~~) about the items you want by setting them using <secretsanta setwishlist:1>.\nAnyways, Good luck! 🎄`)
 
         return build;
       };
@@ -144,6 +171,15 @@ module.exports = {
         ephemeral: true
       });
       // participants is an array of objects, each with a name and a Discord ID
+
+      const notEnoughEmbed = new EmbedBuilder()
+        .setTitle('🦌 Oopsie')
+        .setDescription(`Not enough participants signed up. You need ${2 - guildModel.participants.length} more to start!\n\n🎅 Participants: **${guildModel.participants.length}**\n> Use </secretsanta list:1> to see the list of the secret santas.`)
+
+      if (guildModel.participants.length < 2) return interaction.editReply({
+        embeds: [notEnoughEmbed],
+        ephemeral: true
+      });
 
       // shuffle the array of participants
       let newParticipants = []
@@ -162,6 +198,10 @@ module.exports = {
       }
 
       let noDm = [];
+      let i = 0;
+      function noDms(a) {
+        noDm.push(a);
+      };
 
       async function saveAfter() {
         guildModel.choosen = newParticipants;
@@ -171,24 +211,25 @@ module.exports = {
         guildModel.choosen.forEach(async (u) => {
           const user = await interaction.guild.members.fetch(u.userId)
           const user2 = await interaction.guild.members.fetch(u.recipientId)
+          i += 1;
           const embed = startedUserEmbed(user2);
           user.send({
             embeds: [embed]
-          }).catch(async err => noDm.push(user.id))
+          }).catch(async err => noDms(user.id))
+
+          if (i == guildModel.participants.length && noDm.length != 0) {
+            const noDmEmbed = new EmbedBuilder()
+              .setTitle('DMs Blocked')
+              .setDescription('Everyone was sent a message about the event. But these people were unable to get the message (probably because their DMs are closed).\n\n' + noDm.map(m => '<@' + m + '>'))
+            return interaction.editReply({
+              embeds: [noDmEmbed],
+              ephemeral: true
+            });
+          }
         });
 
-        console.log(noDm);
-
-        if (noDm.length == 0) return interaction.editReply({
-          embeds: [startedEmbed],
-          ephemeral: true
-        });
-
-        const noDmEmbed = new EmbedBuilder()
-          .setTitle('DMs Blocked')
-          .setDescription('Everyone was sent a message about the event along thier recipient\'s name. But these people were unable to get the message (probably because of thier DMs closed).\n\n' + noDm.map(m => '<@' + m + '>'))
         return interaction.editReply({
-          embeds: [noDmEmbed],
+          embeds: [startedEmbed],
           ephemeral: true
         });
       }
@@ -197,7 +238,7 @@ module.exports = {
       await interaction.deferReply({ ephemeral: true });
 
       if (!guildModel.choosen) return interaction.editReply({
-        content: "🎅 Ho Ho Ho, This feature is still in testing. Come back soon!"
+        content: "🎅 Ho Ho Ho, This feature is still in testing. Come back soon!\n\nFor now you can only see a list after a even gets started using </secretsanta start:1>"
       })
       if (interaction.options.getString('format') == 'json') return interaction.editReply({
         content: "🎅 Ho Ho Ho, This feature is still in testing, use **`Normal`** Format instead!"
@@ -279,6 +320,178 @@ module.exports = {
       // Show the modal to the user
       await interaction.showModal(modal);
 
+    } else if (sub == "setwishlist") {
+      await interaction.deferReply({
+        ephemeral: true
+      })
+      const user = guildModel.choosen.filter(u => u.userId == interaction.user.id)[0];
+      const items = interaction.options.getString('items');
+
+      const notFoundEmbed = new EmbedBuilder()
+        .setTitle('🎄 Not Found')
+        .setDescription('You were not in the list, have you even signed up for the event?\n\n> You can signup using </secretsanta signup:1>');
+
+      if (!user) return interaction.editReply({
+        embeds: [notFoundEmbed],
+        ephemeral: true
+      });
+
+      const itemArr = items.split(',');
+
+      const tooMuchEmbed = new EmbedBuilder()
+        .setTitle('🎄 lol')
+        .setDescription('You have provided too much items. Max is `3 items`.\n\n> lol your partner will get broke.');
+
+      if (itemArr.length > 3) return interaction.editReply({
+        embeds: [tooMuchEmbed],
+        ephemeral: true
+      });
+
+      user.wishlist = itemArr;
+      guildModel.save();
+
+      const itemEmbed = (it) => {
+        const build = new EmbedBuilder()
+          .setTitle('🎄 Wish List Set')
+          .setDescription('Successfully set wishlist items!');
+
+        build.addFields({
+          name: "Items",
+          value: `- ${it.join(',').replace(/,/g, '\n- ')}`
+        })
+
+        return build;
+      }
+
+      return interaction.editReply({
+        embeds: [itemEmbed(itemArr)],
+        ephemeral: true
+      })
+    } else if (sub == 'profile') {
+
+      await interaction.deferReply({
+        ephemeral: true,
+      });
+
+      const notStartedEmbed = new EmbedBuilder()
+        .setTitle('🎄 Event Not Started')
+        .setDescription('Event has not started yet. Ask your admin to start using </secretsanta start:1>');
+
+      const notFoundEmbed = new EmbedBuilder()
+        .setTitle('🎄 Not Found')
+        .setDescription('You were not in the list, have you even signed up for the event?\n\n> You can signup using </secretsanta signup:1>');
+
+      const notPartnerEmbed = (id) => {
+        const build = new EmbedBuilder()
+          .setTitle('🎄 You made a typo')
+          .setDescription(`That\'s not your partner.\nYour Partner is: <@${id}>`);
+
+        return build;
+      }
+
+      if (guildModel.started == false) return interaction.reply({
+        embeds: [notStartedEmbed],
+        ephemeral: true
+      })
+      const user = guildModel.choosen.filter(u => u.userId == interaction.user.id)[0];
+
+      if (!user) return interaction.editReply({
+        embeds: [notFoundEmbed],
+        ephemeral: true
+      })
+
+      const userOpt = await interaction.options.getUser('user');
+
+      const embedNotFound = await notPartnerEmbed(user.recipientId)
+
+      if (userOpt.id != user.recipientId) return interaction.editReply({
+        embeds: [embedNotFound],
+        ephemeral: true
+      })
+
+      const user2 = guildModel.choosen.filter(u => u.userId == userOpt.id)[0];
+
+      const noItemsEmbed = new EmbedBuilder()
+        .setTitle('🎄 Not Found')
+        .setDescription('Your partner has not added any item in their wishlist. I guess you can gift them anything?');
+      if (user2.wishlist.length == 0) return interaction.editReply({
+        embeds: [noItemsEmbed],
+        ephemeral: true
+      })
+
+      const listEmbed = (it) => {
+        const build = new EmbedBuilder()
+          .setTitle(`🎄 ${userOpt.tag}'s Wishlist`)
+
+        build.addFields({
+          name: "Items",
+          value: `- ${it.join(',').replace(/,/g, '\n- ')}`
+        })
+
+        return build;
+      }
+
+      return interaction.editReply({
+        embeds: [listEmbed(user2.wishlist)],
+        ephemeral: true
+      })
+    } else if (sub == 'end') {
+      await interaction.deferReply({
+        ephemeral: true
+      });
+
+      const notify = interaction.options.getBoolean('notify');
+
+
+      const embed = new EmbedBuilder()
+        .setTitle('🎄 Event Ended')
+        .setDescription(`Secret Santa Event Ended.\n\n🕵🏻‍♀️ Ended By: <@${interaction.user.id}>\n🎅🏻 Participants: ${guildModel.participants.length}`);
+
+
+      const endedEmbed = new EmbedBuilder()
+        .setTitle('🎄 Event Ended')
+        .setDescription(`Secret Santa Event Ended.${notify ? " Participants will slowly get notification about event ending." : ""}\n\n🕵🏻‍♀️ Ended By: <@${interaction.user.id}>\n🎅🏻 Participants: ${guildModel.participants.length}`);
+      let noDm = [];
+      let i = 0;
+
+      function noDms(a) {
+        noDm.push(a);
+      };
+
+      if (notify == true) {
+
+        guildModel.participants.forEach(async (u) => {
+          const user = await interaction.guild.members.fetch(u.userId)
+          await user.send({
+            embeds: [embed]
+          }).catch(async err => {
+            noDms(user.id)
+          })
+          i += 1
+
+          if (i == guildModel.participants.length && noDm.length != 0) {
+            const noDmEmbed = new EmbedBuilder()
+              .setTitle('DMs Blocked')
+              .setDescription('Everyone was sent a message about the event. But these people were unable to get the message (probably because their DMs are closed).\n\n' + noDm.map(m => '<@' + m + '>'))
+            return interaction.editReply({
+              embeds: [noDmEmbed],
+              ephemeral: true
+            });
+          }
+        });
+
+      }
+
+      guildModel.participants = []
+      guildModel.choosen = []
+      guildModel.started = false
+      guildModel.startedBy = null
+      await guildModel.save();
+
+      return interaction.editReply({
+        embeds: [endedEmbed],
+        ephemeral: true
+      });
     }
   },
 };

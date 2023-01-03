@@ -35,6 +35,26 @@ module.exports = {
         iconURL: interaction.user.displayAvatarURL()
       });
 
+    const secretsanta = new EmbedBuilder()
+      .setTitle("Categories » Secret Santa")
+      .setColor('#ff5050')
+      .setDescription("🎅 The famous and awesome secret santa game now on Discord!\nHere are the 🎅🏻 Secret Santa commands:")
+      .addFields(
+        { name: 'Signup', value: `Signup to participate in the event.\n > </secretsanta signup:1>` },
+        { name: 'Start', value: `Starts the event. **Needs \`MANAGE_EVENTS\` permission**\n > </secretsanta start:1>` },
+        { name: 'Leave', value: `Take you name off the rolls.\n > </secretsanta leave:1>` },
+        { name: 'List', value: `Shows a list of participants. **Needs \`MANAGE_EVENTS\` permission**\n > </secretsanta list:1>` },
+        { name: 'Message', value: `Message your partner, since its secret santa the sender\'s name will be anonymous.\n > </secretsanta message:1>` },
+        { name: 'Profile', value: `Check your partner\'s profile for their wishlist\n > </secretsanta profile:1>` },
+        { name: 'Set wishlist', value: `You can set you wishlist and give your partner a hint about what you want\n > </secretsanta setwishlist:1>` },
+        { name: 'End', value: `End an ongoing event. **Needs \`MANAGE_EVENTS\` permission**\n> </secretsanta start:1>` },
+      )
+      .setTimestamp()
+      .setFooter({
+        text: `Requested by ${interaction.user.username} | ` + config.copyright,
+        iconURL: interaction.user.displayAvatarURL()
+      });
+
     const general = new EmbedBuilder()
       .setTitle("Categories » General")
       .setColor('#2F3136')
@@ -57,22 +77,28 @@ module.exports = {
           .setPlaceholder("Please Select a Category")
           .setDisabled(state)
           .addOptions([{
-            label: `Giveaways`,
-            value: `giveaway`,
-            description: `View all the giveaway based commands!`,
-            emoji: `🎉`
-          },
-          {
             label: `General`,
             value: `general`,
             description: `View all the general bot commands!`,
             emoji: `⚙`
+          },
+          {
+            label: `Secret Santa`,
+            value: `secretsanta`,
+            description: `View all the secret santa bot commands!`,
+            emoji: `🎄`
+          },
+          {
+            label: `Giveaways`,
+            value: `giveaway`,
+            description: `View all the giveaway based commands!`,
+            emoji: `🎉`
           }
           ])
       ),
     ];
 
-    const initialMessage = await interaction.reply({ embeds: [embed], components: components(false) });
+    const initialMessage = await interaction.reply({ embeds: [embed], components: components(false), fetchReply: true });
 
     const filter = (interaction) => interaction.user.id === interaction.member.id;
 
@@ -80,7 +106,7 @@ module.exports = {
       {
         filter,
         componentType: ComponentType.SelectMenu,
-        idle: 300000,
+        idle: 10 * 1000,
         dispose: true,
       });
 
@@ -89,14 +115,11 @@ module.exports = {
         interaction.update({ embeds: [giveaway], components: components(false) }).catch((e) => { });
       } else if (interaction.values[0] === "general") {
         interaction.update({ embeds: [general], components: components(false) }).catch((e) => { });
+      } else if (interaction.values[0] === "secretsanta") {
+        interaction.update({ embeds: [secretsanta], components: components(false) }).catch((e) => { });
       }
     });
     collector.on('end', (collected, reason) => {
-      if (reason == "time") {
-        initialMessage.edit({
-          components: [],
-        });
-      }
     })
   }
 }

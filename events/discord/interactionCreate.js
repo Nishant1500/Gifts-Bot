@@ -30,6 +30,30 @@ module.exports = async (client, interaction) => {
       content: `Use </${interaction.commandName}:1> in an actual server.`,
       ephemeral: true
     });
+
+  const { cooldowns } = client;
+
+		if (!cooldowns.has(command.name)) {
+			cooldowns.set(command.name, new Collection());
+		}
+
+		const now = Date.now();
+		const timestamps = cooldowns.get(command.name);
+		const cooldownAmount = (command.cooldown || 3) * 1000;
+
+		if (timestamps.has(message.author.id)) {
+			const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
+
+			if (now < expirationTime) {
+				const timeLeft = (expirationTime - now) / 1000;
+				return interaction.reply({
+					content: `Please wait **${timeLeft.toFixed(
+						1
+					)}** more second(s) before reusing the \`${command.name}\` command.`,
+				});
+			}
+		}
+    
     try {
       command.run(client, interaction);
       console.log(chalk.hex('#FFAC1C')('[Usage] ') + interaction.user.tag + ' used ' + chalk.blue('/'+ (interaction.options.getSubcommand(false)?(interaction.commandName+ ' '+ interaction.options.getSubcommand()): interaction.commandName)) + ' in ' + chalk.blue(interaction.guild.name) + chalk.greenBright(`[${interaction.guild.id}]`))

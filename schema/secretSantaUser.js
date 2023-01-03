@@ -11,7 +11,11 @@ const secretSantaUserSchema = new mongoose.Schema(
       }],
     choosen: [{
       userId: String,
-      recipientId: String
+      recipientId: String,
+      wishlist: { 
+        type: [String],
+        default: []
+      }
     }],
     startedBy: String,
     started: {type: Boolean, default: false}
