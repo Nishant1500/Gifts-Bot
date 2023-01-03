@@ -1,4 +1,4 @@
-const { EmbedBuilder, SlashCommandBuilder, PermissionsBitField } = require('discord.js');
+const { EmbedBuilder, SlashCommandBuilder, PermissionsBitField, ActionRowBuilder, Events, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 const lodash = require('lodash');
 const whitelistedUserModel = require('../schema/whitelistUser.js')
 const secretSantaUserModel = require('../schema/secretSantaUser.js')
@@ -31,6 +31,15 @@ module.exports = {
               { name: 'Normal', value: 'normal' },
             )
         ),
+    )
+    .addSubcommand(subcommand =>
+      subcommand.setName('message')
+        .setDescription('Message your partner, since its secret santa the sender\'s name will be anonymous.')
+        .addUserOption(option =>
+          option.setName('user')
+            .setDescription('Your partner tag.')
+            .setRequired(true)
+        )
     ),
   guildOnly: true,
   private: false,
@@ -64,11 +73,11 @@ module.exports = {
         .setTitle('🎄 Already Started')
         .setDescription('The event have already started!\nYou cannot singup anymore, Try again later.')
 
-      if(guildModel.started == true) return interaction.editReply({
+      if (guildModel.started == true) return interaction.editReply({
         embeds: [alreadyStartedEmbed],
         ephemeral: true
       });
-      
+
       if (guildModel.participants.some(u => u.userId == interaction.user.id)) return interaction.editReply({
         embeds: [alreadyEmbed],
         ephemeral: true
@@ -83,18 +92,6 @@ module.exports = {
         embeds: [signedUpEmbed],
         ephemeral: true
       })
-
-
-      // participants is an array of objects, each with a name and a Discord ID
-
-      // shuffle the array of participants
-      participants = lodash.shuffle(guildModel.participants);
-
-      // assign each participant a gift recipient
-      for (let i = 0; i < participants.length; i++) {
-        let recipient = participants[(i + 1) % participants.length];  // the recipient is the next participant in the array
-        participants[i].recipient = recipient.name;  // add the recipient's name to the participant object
-      }
 
     } else if (sub == 'leave') {
       await interaction.deferReply({ ephemeral: true })
@@ -131,9 +128,17 @@ module.exports = {
         .setTitle('🎄 Ho Ho Ho')
         .setDescription(`Event Started! Slowly people will be getting an announcement in thier respective DMs.\n\n🎅 Total Participants: ${guildModel.participants.length}\n> Use </secretsanta list:1> for the updated list.`)
 
+      const startedUserEmbed = (u) => {
+        const build = new EmbedBuilder()
+          .setTitle('🎄 Ho Ho Ho')
+          .setDescription(`You have been choosen as a 🎅🏻 secret santa for <@${u.id}>[(${u.user.tag})](https://discord.com/users/${u.id}/). Be extra sneaky or else they will know...\n\nAnyways, Good luck! 🎄`)
+
+        return build;
+      };
+
       const alreadyEmbed = new EmbedBuilder()
         .setTitle('Already Started')
-        .setDescription(`This event have already began!\n\n🎅 Participants: ${guildModel.participants.length}\n> Use </secretsanta list:1> to see the list of the secret santas.`)
+        .setDescription(`This event have already began!\n\n🎅 Participants: ${guildModel.participants.length}\n🎄 Started By: <@${guildModel.startedBy}>\n> Use </secretsanta list:1> to see the list of the secret santas.`)
       if (guildModel.started == true) return interaction.editReply({
         embeds: [alreadyEmbed],
         ephemeral: true
@@ -151,19 +156,39 @@ module.exports = {
           ...participants[i], recipientId: recipient.userId
         })
 
-        
+
 
         if (i == (participants.length - 1)) saveAfter()
       }
+
+      let noDm = [];
 
       async function saveAfter() {
         guildModel.choosen = newParticipants;
         guildModel.started = true;
         guildModel.startedBy = interaction.user.id;
         await guildModel.save();
+        guildModel.choosen.forEach(async (u) => {
+          const user = await interaction.guild.members.fetch(u.userId)
+          const user2 = await interaction.guild.members.fetch(u.recipientId)
+          const embed = startedUserEmbed(user2);
+          user.send({
+            embeds: [embed]
+          }).catch(async err => noDm.push(user.id))
+        });
 
-        return interaction.editReply({
+        console.log(noDm);
+
+        if (noDm.length == 0) return interaction.editReply({
           embeds: [startedEmbed],
+          ephemeral: true
+        });
+
+        const noDmEmbed = new EmbedBuilder()
+          .setTitle('DMs Blocked')
+          .setDescription('Everyone was sent a message about the event along thier recipient\'s name. But these people were unable to get the message (probably because of thier DMs closed).\n\n' + noDm.map(m => '<@' + m + '>'))
+        return interaction.editReply({
+          embeds: [noDmEmbed],
           ephemeral: true
         });
       }
@@ -197,6 +222,63 @@ module.exports = {
           });
         }
       })
+    } else if (sub == 'message') {
+
+      const notStartedEmbed = new EmbedBuilder()
+        .setTitle('🎄 Event Not Started')
+        .setDescription('Event has not started yet. Ask your admin to start using </secretsanta start:1>');
+
+      const notFoundEmbed = new EmbedBuilder()
+        .setTitle('🎄 Not Found')
+        .setDescription('You were not in the list, have you even signed up for the event?\n\n> You can signup using </secretsanta signup:1>');
+
+      const notPartnerEmbed = (id) => {
+        const build = new EmbedBuilder()
+          .setTitle('🎄 You made a typo')
+          .setDescription(`That\'s not your partner.\nYour Partner is: <@${id}>`);
+
+        return build;
+      }
+
+      if (guildModel.started == false) return interaction.reply({
+        embeds: [notStartedEmbed],
+        ephemeral: true
+      })
+      const user = guildModel.choosen.filter(u => u.userId == interaction.user.id)[0];
+
+      if (!user) return interaction.reply({
+        embeds: [notFoundEmbed],
+        ephemeral: true
+      })
+
+      const userOpt = await interaction.options.getUser('user');
+
+      const embedNotFound = await notPartnerEmbed(user.recipientId)
+
+      if (userOpt.id != user.recipientId) return interaction.reply({
+        embeds: [embedNotFound],
+        ephemeral: true
+      })
+
+      const modal = new ModalBuilder()
+        .setCustomId('secretSantaMessageHandler')
+        .setTitle('Santa Mail 🦌🎁🎄');
+
+      const codeInput = new TextInputBuilder()
+        .setCustomId('msgInput')
+        .setLabel("What message you wanna send to your partner?")
+        // Paragraph means multiple lines of text.
+        .setStyle(TextInputStyle.Paragraph)
+        .setMaxLength(3072)
+        .setMinLength(10);
+
+      const actionRow = new ActionRowBuilder().addComponents(codeInput);
+
+      modal.addComponents(actionRow);
+
+      // Show the modal to the user
+      await interaction.showModal(modal);
+
     }
   },
 };
