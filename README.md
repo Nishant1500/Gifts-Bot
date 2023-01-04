@@ -15,7 +15,7 @@
 ![Contributors](https://img.shields.io/github/contributors/Nishant1500/Gifts-Bot?color=dark-green) ![Issues](https://img.shields.io/github/issues/Nishant1500/Gifts-Bot) 
 
 #### Features Planned
-- [ ] Secrer Santa system: The bot would be able to choose secret santas along with their partners from a members list of a guild. It would be very hand for snowsgiving and holiday season.
+- [x] ~~Secrer Santa system: The bot would be able to choose secret santas along with their partners from a members list of a guild. It would be very hand for snowsgiving and holiday season.~~
 
 ## About The Project
 
