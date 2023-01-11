@@ -60,12 +60,12 @@ module.exports = async (client, interaction) => {
     
     try {
       command.run(client, interaction);
-      console.log(chalk.hex('#FFAC1C')('[Usage] ') + interaction.user.tag + ' used ' + chalk.blue('/'+ (interaction.options.getSubcommand(false)?(interaction.commandName+ ' '+ interaction.options.getSubcommand()): interaction.commandName)) + ' in ' + chalk.blue(interaction.guild.name) + chalk.greenBright(`[${interaction.guild.id}]`))
+      console.log(chalk.hex('#FFAC1C')('[Usage] ') + interaction.user.tag + ' used ' + chalk.blue('/'+ (interaction.options.getSubcommand(false)?(interaction.commandName+ ' '+ interaction.options.getSubcommand()): interaction.commandName)) + ' in ' + (!!interaction.guild ? (chalk.blue(interaction.guild.name) + chalk.greenBright(`[${interaction.guild.id}]`)) : chalk.blue('DMs') + interaction.guild))
     } catch (err) {
       console.log(chalk.hex('#FFAC1C')(`${err}`))
       console.log(chalk.red(`${err.stack.replace(`${err}`, '')}`))
 
-      return interaction.reply({ content: 'Something happened on our end :(', ephemeral: true });
+      return interaction.editReply({ content: 'Something happened on our end :(', ephemeral: true });
     }
   } else if (interaction.isModalSubmit()) {
     const handler = client.modalHandlers.get(interaction.customId);

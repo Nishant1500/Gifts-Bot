@@ -52,13 +52,23 @@ module.exports = {
       let rolereq = interaction.options.getRole('role')
       let invite = interaction.options.getString('invite')
       let reqinvite;
+      let dur;
+    try {
+      dur = ms(giveawayDuration);
+    } catch (err) {
+      console.log(err)
+    return interaction.reply({
+        content: ':x: Please select a valid duration!',
+        ephemeral: true
+      });
+    }
 
       if (!giveawayChannel.isTextBased()) return interaction.reply({
         content: ':x: Please select a text channel!',
         ephemeral: true
       });
 
-      if (isNaN(ms(giveawayDuration))) return interaction.reply({
+      if (isNaN(dur)) return interaction.reply({
         content: ':x: Please select a valid duration!',
         ephemeral: true
       });
@@ -71,7 +81,7 @@ module.exports = {
 
       client.giveawaysManager.start(giveawayChannel, {
         // The giveaway duration
-        duration: ms(giveawayDuration),
+        duration: dur,
         // The giveaway prize
         prize: giveawayPrize,
         hostedBy: interaction.user,
@@ -146,7 +156,7 @@ module.exports = {
 
 
     } else if (sub == 'end') {
-      if (!interaction.member.permissions.has('MANAGE_MESSAGES') && !interaction.member.roles.cache.some((r) => r.name === "Giveaways")) {
+      if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages) && !interaction.member.roles.cache.some((r) => r.name === "Giveaways")) {
         return interaction.reply({
           content: ':x: You need to have the manage messages permissions to end giveaways.',
           ephemeral: true

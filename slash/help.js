@@ -1,4 +1,4 @@
-const { EmbedBuilder, ActionRowBuilder, SelectMenuBuilder, ComponentType, SlashCommandBuilder } = require('discord.js');
+const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, ComponentType, SlashCommandBuilder } = require('discord.js');
 const config = require('../config.js');
 
 module.exports = {
@@ -25,9 +25,9 @@ module.exports = {
       .setColor('#2F3136')
       .setDescription("Here are the 🎉 Giveaway commands:")
       .addFields(
-        { name: 'Create / Start', value: `Start a giveaway in your guild!\n > </giveaway start:1>`, inline: true },
-        { name: 'End', value: `End an already running giveaway!\n > </giveaway end:1>`, inline: true },
-        { name: 'Reroll', value: `Reroll an ended giveaway!\n > </giveaway reroll:1>`, inline: true },
+        { name: 'Create / Start', value: `Start a giveaway in your guild! **Needs \`MANAGE_MESSAGES\` permission**\n > </giveaway start:1>`, inline: true },
+        { name: 'End', value: `End an already running giveaway! **Needs \`MANAGE_MESSAGES\` permission**\n > </giveaway end:1>`, inline: true },
+        { name: 'Reroll', value: `Reroll an ended giveaway! **Needs \`MANAGE_MESSAGES\` permission**\n > </giveaway reroll:1>`, inline: true },
       )
       .setTimestamp()
       .setFooter({
@@ -37,7 +37,7 @@ module.exports = {
 
     const secretsanta = new EmbedBuilder()
       .setTitle("Categories » Secret Santa")
-      .setColor('#ff5050')
+      .setColor('#46a13a')
       .setDescription("🎅 The famous and awesome secret santa game now on Discord!\nHere are the 🎅🏻 Secret Santa commands:")
       .addFields(
         { name: 'Signup', value: `Signup to participate in the event.\n > </secretsanta signup:1>` },
@@ -70,9 +70,11 @@ module.exports = {
         iconURL: interaction.user.displayAvatarURL()
       });
 
-    const components = (state) => [
+    let _default = 'overview';
+
+    const components = ({ state, selected }) => [
       new ActionRowBuilder().addComponents(
-        new SelectMenuBuilder()
+        new StringSelectMenuBuilder()
           .setCustomId("help-menu")
           .setPlaceholder("Please Select a Category")
           .setDisabled(state)
@@ -80,26 +82,34 @@ module.exports = {
             label: `General`,
             value: `general`,
             description: `View all the general bot commands!`,
-            emoji: `⚙`
+            emoji: `⚙`,
+            default: (selected == 'general')
           },
           {
             label: `Secret Santa`,
             value: `secretsanta`,
             description: `View all the secret santa bot commands!`,
-            emoji: `🎄`
+            emoji: `🎄`,
+            default: (selected == 'secretsanta')
           },
           {
             label: `Giveaways`,
             value: `giveaway`,
             description: `View all the giveaway based commands!`,
-            emoji: `🎉`
+            emoji: `🎉`,
+            default: (selected == 'giveaway')
           }
           ])
       ),
     ];
 
-    const initialMessage = await interaction.reply({ embeds: [embed], components: components(false), fetchReply: true });
-
+    await interaction.reply({
+      embeds: [embed],
+      components: components({
+        state: false
+      })
+    });
+    const setInitialMessage = (msg) => initialMessage = msg;
     const filter = (interaction) => interaction.user.id === interaction.member.id;
 
     const collector = interaction.channel.createMessageComponentCollector(
@@ -110,16 +120,43 @@ module.exports = {
         dispose: true,
       });
 
-    collector.on('collect', (interaction) => {
+    collector.on('collect', async (interaction) => {
       if (interaction.values[0] === "giveaway") {
-        interaction.update({ embeds: [giveaway], components: components(false) }).catch((e) => { });
+        _default = 'giveaway'
+        await interaction.update({
+          embeds: [giveaway],
+          components: components({
+            state: false,
+            selected: _default
+          })
+        }).catch((e) => { });
       } else if (interaction.values[0] === "general") {
-        interaction.update({ embeds: [general], components: components(false) }).catch((e) => { });
+        _default = 'general'
+        await interaction.update({
+          embeds: [general],
+          components: components({
+            state: false,
+            selected: _default
+          })
+        }).catch((e) => { });
       } else if (interaction.values[0] === "secretsanta") {
-        interaction.update({ embeds: [secretsanta], components: components(false) }).catch((e) => { });
+        _default = 'secretsanta'
+        await interaction.update({
+          embeds: [secretsanta],
+          components: components({
+            state: false,
+            selected: _default
+          })
+        }).catch((e) => { });
       }
     });
     collector.on('end', (collected, reason) => {
-    })
-  }
+      interaction.editReply({
+        components: components({
+          state: true,
+          selected: _default
+        })
+      })
+    });
+  },
 }

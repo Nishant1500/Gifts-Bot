@@ -35,40 +35,42 @@ const db = mongoose.connection;
 // Check the connection
 db.on('error', console.error.bind(console, 'Connection error:'));
 db.once('open', () => {
-    console.log(chalk.greenBright('[MongoDB]') + ' Connected to MongoDB.');
+  console.log(chalk.greenBright('[🌿 MongoDB]') + ' Connected to MongoDB.');
 });
+
+mongoose.set('strictQuery', false);
 
 const { GiveawaysManager } = require("discord-giveaways");
 const GiveawayManager = class extends GiveawaysManager {
-    // This function is called when the manager needs to get all giveaways which are stored in the database.
-    async getAllGiveaways() {
-        // Get all giveaways from the database. We fetch all documents by passing an empty condition.
-        return await giveawayModel.find().lean().exec();
-    }
+  // This function is called when the manager needs to get all giveaways which are stored in the database.
+  async getAllGiveaways() {
+    // Get all giveaways from the database. We fetch all documents by passing an empty condition.
+    return await giveawayModel.find().lean().exec();
+  }
 
-    // This function is called when a giveaway needs to be saved in the database.
-    async saveGiveaway(messageId, giveawayData) {
-        // Add the new giveaway to the database
-        await giveawayModel.create(giveawayData);
-        // Don't forget to return something!
-        return true;
-    }
+  // This function is called when a giveaway needs to be saved in the database.
+  async saveGiveaway(messageId, giveawayData) {
+    // Add the new giveaway to the database
+    await giveawayModel.create(giveawayData);
+    // Don't forget to return something!
+    return true;
+  }
 
-    // This function is called when a giveaway needs to be edited in the database.
-    async editGiveaway(messageId, giveawayData) {
-        // Find by messageId and update it
-        await giveawayModel.updateOne({ messageId }, giveawayData).exec();
-        // Don't forget to return something!
-        return true;
-    }
+  // This function is called when a giveaway needs to be edited in the database.
+  async editGiveaway(messageId, giveawayData) {
+    // Find by messageId and update it
+    await giveawayModel.updateOne({ messageId }, giveawayData).exec();
+    // Don't forget to return something!
+    return true;
+  }
 
-    // This function is called when a giveaway needs to be deleted from the database.
-    async deleteGiveaway(messageId) {
-        // Find by messageId and delete it
-        await giveawayModel.deleteOne({ messageId }).exec();
-        // Don't forget to return something!
-        return true;
-    }
+  // This function is called when a giveaway needs to be deleted from the database.
+  async deleteGiveaway(messageId) {
+    // Find by messageId and delete it
+    await giveawayModel.deleteOne({ messageId }).exec();
+    // Don't forget to return something!
+    return true;
+  }
 };
 
 // Initialise discord giveaways
@@ -92,7 +94,7 @@ let tt = false;
 let ft = false;
 
 function loadedEvents() {
-  if(tt && ft) console.log('\n\n' + chalk.hex('#5865F2')('[EventManager]') + `Loaded ${totalFileCount} Events.`)
+  if (tt && ft) console.log('\n\n' + chalk.hex('#5865F2')('[EventManager]') + `Loaded ${totalFileCount} Events.`)
 }
 
 fs.readdir("./events/discord", async (_err, files) => {
@@ -101,13 +103,13 @@ fs.readdir("./events/discord", async (_err, files) => {
     if (!file.endsWith(".js")) return;
     const event = require(`./events/discord/${file}`);
     let eventName = file.split(".")[0];
-    console.log(chalk.hex('#5865F2')('[DiscordEvent]') +   ` Loaded: ${eventName}`);
+    console.log(chalk.hex('#5865F2')('[DiscordEvent]') + ` Loaded: ${eventName}`);
     client.on(eventName, event.bind(null, client));
     delete require.cache[require.resolve(`./events/discord/${file}`)];
     fileCount += 1;
   })
   totalFileCount += fileCount
-  if(fileCount = files.length) ft = true; 
+  if (fileCount = files.length) ft = true;
   loadedEvents();
 })
 
@@ -121,19 +123,19 @@ fs.readdir("./events/giveaways", async (_err, files) => {
     client.giveawaysManager.on(eventName, (...file) => event.execute(...file, client)), delete require.cache[require.resolve(`./events/giveaways/${file}`)];
     fileCount += 1;
   })
-totalFileCount += fileCount
-  if(fileCount = files.length) tt = true;
+  totalFileCount += fileCount
+  if (fileCount = files.length) tt = true;
   loadedEvents()
 })
 
 process.on('unhandledRejection', error => {
-    console.log(`UnhandledPromiseRejection : ${error}\n`)
+  console.log(`UnhandledPromiseRejection : ${error}\n`)
   console.log(chalk.hex('#FFAC1C')(`${error.stack}\n`))
 });
-    
-    
-    
-  client.interactions = new Discord.Collection();
+
+
+
+client.interactions = new Discord.Collection();
 // creating an empty array for registering slash commands
 client.slashArr = []
 client.slashPrivateArr = []
@@ -145,7 +147,7 @@ fs.readdir("./slash/", (_err, files) => {
     let props = require(`./slash/${file}`);
     let commandName = file.split(".")[0];
     client.interactions.set(commandName, props);
-    if(props.private === true) {
+    if (props.private === true) {
       client.slashPrivateArr.push(props.data)
     } else client.slashArr.push(props.data)
   });
@@ -159,6 +161,19 @@ fs.readdir("./modalHandler/", (_err, files) => {
     client.modalHandlers.set(handlerName, props);
   });
 });
+
+const http = require('http')
+http.createServer(function(req, res) {
+  res.write("Online :)");
+  res.end();
+}).listen(8080);
+let started = false;
+
+client.once('ready', () => started = true);
+const { spawn } = require('child_process');
+setTimeout(() => {
+  if (!started) spawn('kill', ['1'])
+}, 15000)
 
 
 // Login through the client

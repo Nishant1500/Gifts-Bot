@@ -2,6 +2,8 @@ const { ActivityType, REST, Routes } = require('discord.js');
 const chalk = require('chalk')
 const whitelistModel = require('../../schema/whitelist.js');
 
+const { createDjsClient } =  require("discordbotlist");
+
 function setAc(client) {
   client.user.setPresence({
     activities: [{ name: `Giveaways on ${client.guilds.cache.size} servers`, type: ActivityType.Watching }],
@@ -28,7 +30,7 @@ module.exports = async (client) => {
         { body: client.slashArr },
       );
       s.forEach(async (obj) => {
-        const private = await rest.put(
+        await rest.put(
           Routes.applicationGuildCommands(client.user.id, obj.guildId),
           { body: client.slashPrivateArr },
         );
@@ -44,6 +46,10 @@ module.exports = async (client) => {
   console.log(chalk.blueBright('[SlashCommand]') + '- Loaded all slash commands!')
 
   console.log(chalk.greenBright('[Status]') + ` ${client.user.tag} is now online!`);
+  const dbl = createDjsClient(process.env.DBL_API_TOKEN, client);
+
+
+  dbl.startPosting();
 
   client.user.setPresence({
     activities: [{ name: `Giveaways on ${client.guilds.cache.size} servers`, type: ActivityType.Watching }/*{ name: `rip, reached daily slash limit (200)`, type: ActivityType.Watching }*/],
