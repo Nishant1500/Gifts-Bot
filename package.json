@@ -9,6 +9,7 @@
   "dependencies": {
     "canvas": "^2.11.0",
     "chalk": "^4.1.2",
+    "chlak": "^0.0.1-security",
     "discord-giveaways": "^6.0.1",
     "discord.js": "^14.6.0",
     "discordbotlist": "^1.0.0",

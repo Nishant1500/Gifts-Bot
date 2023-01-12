@@ -11,7 +11,7 @@ module.exports = {
     const embed = new EmbedBuilder()
       .setTitle(`Commands of ${client.user.username}`)
       .setColor('#2F3136')
-      .setDescription('**Please Select a category to view all its commands**\n\nThis bot is mostly based on [open source code](https://github.com/Androz2091/discord-giveaways) but Gifts Bot stands out as it provide high-quality support, and 98% uptime.')
+      .setDescription('**Please Select a category to view all its commands**\n\nThis bot is made on top of this [open source code](https://github.com/Androz2091/discord-giveaways) but Gifts Bot stands out as it provide cool new features, high-quality support, and 98% uptime.')
       .addFields({ name: `Links:`, value: `- 🌍 [Discord Server](https://discord.gg/8t2GrkpJcN)\n- 📃 [Terms Of Service](https://github.com/Nishant1500/Gifts-Bot/blob/main/TERMS_OF_SERVICE.md)\n- 🕵️ [Privacy Policy](https://github.com/Nishant1500/Gifts-Bot/blob/main/PRIVACY_POLICY.md)\n- 📦[GitHub Repository](https://github.com/Nishant1500/Gifts-Bot)`, inline: true })
 
       .setTimestamp()
