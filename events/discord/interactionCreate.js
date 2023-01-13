@@ -31,6 +31,14 @@ module.exports = async (client, interaction) => {
       content: `Use </${interaction.commandName}:1> in an actual server.`,
       ephemeral: true
     });
+    normalPerms = ['SendMessages', 'AddReactions', 'ViewChannel', 'SendMessagesInThreads', 'ReadMessageHistory', 'UseExternalEmojis']
+
+    normalPerms.forEach(async (s) => {
+      if(!interaction.guild.members.me.permissions.has(PermissionsBitField.Flags[`${s}`])) return interaction.user.send({
+          content: `I need \`${s}\` permission to work normally`,
+          ephemeral: true
+      });
+    })
 
   const { cooldowns } = client;
 

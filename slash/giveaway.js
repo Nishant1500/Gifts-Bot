@@ -34,6 +34,7 @@ module.exports = {
   guildOnly: true,
   private: false,
   run: async (client, interaction) => {
+    
     const sub = interaction.options.getSubcommand();
 
     if (sub == "start") {
