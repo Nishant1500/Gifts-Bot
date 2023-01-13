@@ -1,5 +1,5 @@
 const chalk = require('chalk');
-const { Collection } = require('discord.js');
+const { Collection, PermissionsBitField } = require('discord.js');
 const whitelistedUserModel = require('../../schema/whitelistUser.js');
 
 module.exports = async (client, interaction) => {
@@ -25,7 +25,7 @@ module.exports = async (client, interaction) => {
       content: "You This maze isn't for you.",
       ephemeral: true
     })
-    
+
 
     if (command.guildOnly && !interaction.guild) return interaction.reply({
       content: `Use </${interaction.commandName}:1> in an actual server.`,
@@ -34,41 +34,41 @@ module.exports = async (client, interaction) => {
     normalPerms = ['SendMessages', 'AddReactions', 'ViewChannel', 'SendMessagesInThreads', 'ReadMessageHistory', 'UseExternalEmojis']
 
     normalPerms.forEach(async (s) => {
-      if(!interaction.guild.members.me.permissions.has(PermissionsBitField.Flags[`${s}`])) return interaction.user.send({
-          content: `I need \`${s}\` permission to work normally`,
-          ephemeral: true
+      if (!interaction.guild.members.me.permissions.has(PermissionsBitField.Flags[`${s}`])) return interaction.user.send({
+        content: `I need \`${s}\` permission to work normally. Ask out an Admin of the server to give the permission :)`,
+        ephemeral: true
       });
     })
 
-  const { cooldowns } = client;
+    const { cooldowns } = client;
 
-		if (!cooldowns.has(command.name)) {
-			cooldowns.set(command.name, new Collection());
-		}
+    if (!cooldowns.has(command.name)) {
+      cooldowns.set(command.name, new Collection());
+    }
 
-		const now = Date.now();
-		const timestamps = cooldowns.get(command.name);
-		const cooldownAmount = (command.cooldown || 3) * 1000;
+    const now = Date.now();
+    const timestamps = cooldowns.get(command.name);
+    const cooldownAmount = (command.cooldown || 3) * 1000;
 
-		if (timestamps.has(interaction.user.id)) {
-			const expirationTime = timestamps.get(interaction.user.id) + cooldownAmount;
+    if (timestamps.has(interaction.user.id)) {
+      const expirationTime = timestamps.get(interaction.user.id) + cooldownAmount;
 
-			if (now < expirationTime) {
-				const timeLeft = (expirationTime - now) / 1000;
-				return interaction.reply({
-					content: `Please wait **${timeLeft.toFixed(
-						1
-					)}** more second(s) before reusing the \`${interaction.commandName}\` command.`,
-				});
-			}
-		}
+      if (now < expirationTime) {
+        const timeLeft = (expirationTime - now) / 1000;
+        return interaction.reply({
+          content: `Please wait **${timeLeft.toFixed(
+            1
+          )}** more second(s) before reusing the \`${interaction.commandName}\` command.`,
+        });
+      }
+    }
 
     timestamps.set(interaction.user.id, now);
-		setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
-    
+    setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
+
     try {
       command.run(client, interaction);
-      console.log(chalk.hex('#FFAC1C')('[Usage] ') + interaction.user.tag + ' used ' + chalk.blue('/'+ (interaction.options.getSubcommand(false)?(interaction.commandName+ ' '+ interaction.options.getSubcommand()): interaction.commandName)) + ' in ' + (!!interaction.guild ? (chalk.blue(interaction.guild.name) + chalk.greenBright(`[${interaction.guild.id}]`)) : chalk.blue('DMs') + interaction.guild))
+      console.log(chalk.hex('#FFAC1C')('[Usage] ') + interaction.user.tag + ' used ' + chalk.blue('/' + (interaction.options.getSubcommand(false) ? (interaction.commandName + ' ' + interaction.options.getSubcommand()) : interaction.commandName)) + ' in ' + (!!interaction.guild ? (chalk.blue(interaction.guild.name) + chalk.greenBright(`[${interaction.guild.id}]`)) : chalk.blue('DMs') + interaction.guild))
     } catch (err) {
       console.log(chalk.hex('#FFAC1C')(`${err}`))
       console.log(chalk.red(`${err.stack.replace(`${err}`, '')}`))
