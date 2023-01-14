@@ -1,4 +1,6 @@
 <br/>
+
+[![Discord Bots](https://top.gg/api/widget/932255494511394866.svg)](https://top.gg/bot/932255494511394866)
 <p align="center">
   <h3 align="center">Gifts Bot</h3>
 
@@ -6,7 +8,7 @@
     Gift Discord Bot is a useful tool for Discord servers looking to host giveaways and engage their community.
     <br/>
     <br/>
-    <a href="https://github.com/Nishant1500/Gifts-Bot/issues">Report Bug</a>
+ <a href="https://github.com/Nishant1500/Gifts-Bot/issues">Report Bug</a>
     .
     <a href="https://github.com/Nishant1500/Gifts-Bot/issues">Request Feature</a>
   </p>
@@ -15,7 +17,7 @@
 ![Contributors](https://img.shields.io/github/contributors/Nishant1500/Gifts-Bot?color=dark-green) ![Issues](https://img.shields.io/github/issues/Nishant1500/Gifts-Bot) 
 
 #### Features Planned
-- [x] ~~Secrer Santa system: The bot would be able to choose secret santas along with their partners from a members list of a guild. It would be very hand for snowsgiving and holiday season.~~
+- [x] ~~Secret Santa system: The bot would be able to choose secret santas along with their partners from a members list of a guild. It would be very hand for snowsgiving and holiday season.~~
 
 ## About The Project
 
