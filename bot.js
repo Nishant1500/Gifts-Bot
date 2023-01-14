@@ -3,6 +3,7 @@ const { Client, GatewayIntentBits, Partials } = require("discord.js");
 const { AutoPoster } = require('topgg-autoposter');
 const chalk = require('chalk');
 const giveawayModel = require('./schema/giveawayDatabase.js');
+const fileLogger = require('./utils/logger.js');
 
 const client = new Client({
   partials: [
@@ -22,10 +23,10 @@ const config = require("./config.js");
 client.config = config;
 client.cooldowns = new Discord.Collection();
 
-const ap = AutoPoster('Your Top.gg Token', client)
+const ap = AutoPoster(process.env.TOPGG_TOKEN, client)
 
 ap.on('posted', () => {
-  console.log('Posted stats to Top.gg!')
+  console.log(chalk.greenBright('[TopGG] ')+ 'Posted stats to Top.gg!');
 })
 
 const mongoose = require('mongoose');
@@ -129,6 +130,9 @@ fs.readdir("./events/giveaways", async (_err, files) => {
 })
 
 process.on('unhandledRejection', error => {
+  fileLogger.error(`${error.stack}`, {
+        time: new Date(),
+  });
   console.log(`UnhandledPromiseRejection : ${error}\n`)
   console.log(chalk.hex('#FFAC1C')(`${error.stack}\n`))
 });

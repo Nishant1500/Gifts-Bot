@@ -1,12 +1,14 @@
 const chalk = require('chalk');
 const { Collection, PermissionsBitField } = require('discord.js');
 const whitelistedUserModel = require('../../schema/whitelistUser.js');
+const logger = require('../../utils/logger.js')
 
 module.exports = async (client, interaction) => {
   // Check if our interaction is a slash command
   const whitelistedUser = await whitelistedUserModel.findOne({ id: interaction.user.id });
 
   if (interaction.isCommand()) {
+    try {
 
     // Get the command from our slash command collection
     const command = client.interactions.get(interaction.commandName);
@@ -32,12 +34,19 @@ module.exports = async (client, interaction) => {
       ephemeral: true
     });
     normalPerms = ['SendMessages', 'AddReactions', 'ViewChannel', 'SendMessagesInThreads', 'ReadMessageHistory', 'UseExternalEmojis']
+    permsCheck = 1;
+    permsNeeded = []
+    permsChanNeeded = []
 
     normalPerms.forEach(async (s) => {
-      if (!interaction.guild.members.me.permissions.has(PermissionsBitField.Flags[`${s}`])) return interaction.user.send({
-        content: `I need \`${s}\` permission to work normally. Ask out an Admin of the server to give the permission :)`,
-        ephemeral: true
+      if (!interaction?.guild?.members.me.permissions.has(PermissionsBitField.Flags[`${s}`])) permsNeeded.push(s);
+      else if (interaction.channel?.permissionOverwrites?.cache.filter(id => id == client.user.id)[0]?.deny?.has(PermissionsBitField.Flags[`${s}`])) 
+      permsCheck += 1;
+
+      if(permsCheck >= normalPerms.length) return interaction.user.send({
+        content: `I need \`${permsNeeded.join('`, `')}\` permission to work normally. Ask out an Admin of the server to give the permission :)`
       });
+      
     })
 
     const { cooldowns } = client;
@@ -66,16 +75,22 @@ module.exports = async (client, interaction) => {
     timestamps.set(interaction.user.id, now);
     setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
 
-    try {
       command.run(client, interaction);
-      console.log(chalk.hex('#FFAC1C')('[Usage] ') + interaction.user.tag + ' used ' + chalk.blue('/' + (interaction.options.getSubcommand(false) ? (interaction.commandName + ' ' + interaction.options.getSubcommand()) : interaction.commandName)) + ' in ' + (!!interaction.guild ? (chalk.blue(interaction.guild.name) + chalk.greenBright(`[${interaction.guild.id}]`)) : chalk.blue('DMs') + interaction.guild))
+      console.log(chalk.hex('#FFAC1C')('[Usage] ') + interaction.user.tag + ' used ' + chalk.blue('/' + (interaction.options.getSubcommand(false) ? (interaction.commandName + ' ' + interaction.options.getSubcommand()) : interaction.commandName)) + ' in ' + (!!interaction.guild ? (chalk.blue(interaction.guild.name) + chalk.greenBright(`[${interaction.guild.id}]`)) : chalk.blue('DMs')))
     } catch (err) {
+      logger.error(`${err.stack}`, {
+        interactionGuild: interaction.guild? interaction.guild.id: 'DM',
+        time: new Date(),
+        user: interaction.user.id + ':-:' + interaction.user.tag
+                                   });
+      
       console.log(chalk.hex('#FFAC1C')(`${err}`))
       console.log(chalk.red(`${err.stack.replace(`${err}`, '')}`))
 
       return interaction.editReply({ content: 'Something happened on our end :(', ephemeral: true });
     }
   } else if (interaction.isModalSubmit()) {
+    try {
     const handler = client.modalHandlers.get(interaction.customId);
 
     if (!handler) return interaction.reply({
@@ -83,9 +98,14 @@ module.exports = async (client, interaction) => {
       ephemeral: true
     });
 
-    try {
       handler.handle(client, interaction)
     } catch (err) {
+      logger.error(`${err.stack}`, {
+        interactionGuild: interaction.guild? interaction.guild.id: 'DM',
+        time: new Date(),
+        user: interaction.user.id + ':-:' + interaction.user.tag
+                                   });
+      
       console.log(chalk.hex('#FFAC1C')(`${err}`))
       console.log(chalk.red(`${err.stack.replace(`${err}`, '')}`))
 

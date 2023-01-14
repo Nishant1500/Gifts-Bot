@@ -1,15 +1,20 @@
-const chalk = require('chalk')
+const winston = require("winston");
+require("winston-daily-rotate-file");
 
-function log(...args) {
-console.log(chalk.greenBright(...args));
-  return true;
-};
-function hex(hex, ...args) {
-  console.log(chalk.hex(hex)(...args));
-  return true;
-}
+const dashLog = new winston.transports.DailyRotateFile({
+  filename: "./erorr_logs/errors-%DATE%.log",
+  datePattern: "DD-MM-YYYY",
+  zippedArchive: true,
+  maxSize: "10k",
+});
 
-module.exports = {
-  log,
-  hex
-}
+const dash = winston.createLogger({
+  transports: [
+    dashLog,
+    new winston.transports.Console({
+      colorize: true,
+    }),
+  ],
+});
+
+module.exports = dash;

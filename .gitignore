@@ -6,3 +6,4 @@ storage
 .replit
 replit.nix
 node_modules/
+error_logs/
