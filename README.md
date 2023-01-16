@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://top.gg/bot/932255494511394866">
-    <img src="https://top.gg/api/widget/932255494511394866.svg" alt="Top GG" width="80" height="80">
+    <img src="https://top.gg/api/widget/932255494511394866.svg" alt="Top GG">
   </a>
   
   <h3 align="center">Gifts Bot</h3>
