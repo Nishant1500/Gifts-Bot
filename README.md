@@ -14,6 +14,11 @@
  <a href="https://github.com/Nishant1500/Gifts-Bot/issues">Report Bug</a>
     .
     <a href="https://github.com/Nishant1500/Gifts-Bot/issues">Request Feature</a>
+    <br/>
+    <br/>
+    <a href="https://top.gg/bot/932255494511394866">
+    <img src="https://top.gg/api/widget/932255494511394866.svg" alt="Top GG">
+  </a>
   </p>
 </p>
 
