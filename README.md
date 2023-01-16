@@ -1,8 +1,8 @@
 <br/>
 
 <p align="center">
-  <a href="https://top.gg/bot/932255494511394866">
-    <img src="https://top.gg/api/widget/932255494511394866.svg" alt="Top GG">
+  <a href="https://discord.com/users/932255494511394866">
+    <img src="https://images.weserv.nl/?url=cdn.discordapp.com/avatars/932255494511394866/e634eb788ef8e10c9d5900dc8be229b2.webp?v=4&fit=cover&mask=circle&maxage=7d" alt="Gifts Bot">
   </a>
   
   <h3 align="center">Gifts Bot</h3>
