@@ -7,3 +7,4 @@ storage
 replit.nix
 node_modules/
 error_logs/
+interaction_logs/

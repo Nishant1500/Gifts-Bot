@@ -3,7 +3,7 @@ const { Client, GatewayIntentBits, Partials } = require("discord.js");
 const { AutoPoster } = require('topgg-autoposter');
 const chalk = require('chalk');
 const giveawayModel = require('./schema/giveawayDatabase.js');
-const fileLogger = require('./utils/logger.js');
+const { logErr } = require('./utils/logger.js');
 
 const client = new Client({
   partials: [
@@ -18,6 +18,18 @@ const client = new Client({
     GatewayIntentBits.GuildMessageReactions
   ],
 });
+
+let started = false;
+
+client.once('ready', () => started = true);
+const { spawn } = require('child_process');
+setTimeout(() => {
+  if (!started) {
+    console.log('Killing Container, cuz bot stuck :)');
+    return spawn('kill', ['1'])
+  }
+}, 13000)
+
 const fs = require("fs");
 const config = require("./config.js");
 client.config = config;
@@ -130,13 +142,12 @@ fs.readdir("./events/giveaways", async (_err, files) => {
 })
 
 process.on('unhandledRejection', error => {
-  fileLogger.error(`${error.stack}`, {
+  logErr.error(`${error.stack}`, {
         time: new Date(),
   });
   console.log(`UnhandledPromiseRejection : ${error}\n`)
   console.log(chalk.hex('#FFAC1C')(`${error.stack}\n`))
 });
-
 
 
 client.interactions = new Discord.Collection();
@@ -171,13 +182,6 @@ http.createServer(function(req, res) {
   res.write("Online :)");
   res.end();
 }).listen(8080);
-let started = false;
-
-client.once('ready', () => started = true);
-const { spawn } = require('child_process');
-setTimeout(() => {
-  if (!started) spawn('kill', ['1'])
-}, 15000)
 
 
 // Login through the client

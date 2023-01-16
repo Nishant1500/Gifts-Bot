@@ -2,13 +2,21 @@ const winston = require("winston");
 require("winston-daily-rotate-file");
 
 const dashLog = new winston.transports.DailyRotateFile({
-  filename: "./erorr_logs/errors-%DATE%.log",
+  filename: "./error_logs/errors-%DATE%.log",
   datePattern: "DD-MM-YYYY",
   zippedArchive: true,
   maxSize: "10k",
+  maxFiles: '3'
+});
+const interactionLog = new winston.transports.DailyRotateFile({
+  filename: "./interaction_logs/interaction-%DATE%.log",
+  datePattern: "DD-MM-YYYY",
+  zippedArchive: true,
+  maxSize: "1m",
+  maxFiles: "3d"
 });
 
-const dash = winston.createLogger({
+const logErr = winston.createLogger({
   transports: [
     dashLog,
     new winston.transports.Console({
@@ -17,4 +25,13 @@ const dash = winston.createLogger({
   ],
 });
 
-module.exports = dash;
+const log = winston.createLogger({
+  transports: [
+    interactionLog,
+  ],
+});
+
+module.exports = {
+  logErr,
+  log
+};
