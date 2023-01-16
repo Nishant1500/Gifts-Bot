@@ -33,7 +33,42 @@ There are a few features that might make Gift Discord Bot stand out in compariso
 
 Overall, Gift Discord Bot is a reliable and feature-rich solution for hosting giveaways on Discord, and its excellent support and uptime make it an appealing choice for users who want a hassle-free experience.
 
-> **Note:** The invite link asks for SERVER_SUBSCRIPTION_INSIGHTS and  SERVER_INSIGHTS. It's optional, we just wanted to gather analytical data for giveaway volumes and stuff. Feel free to deny those permissions. (not implemented yet, but might be handy in future)
+So why wait? Add Gifts Bot to your Discord server today and make all your holiday gift-giving a breeze!
+
+> **Note:** The invite link asks for `SERVER_SUBSCRIPTION_INSIGHTS` and `SERVER_INSIGHTS`. It's optional, we just wanted to gather analytical data for giveaway volumes and stuff. Feel free to deny those permissions. (Not implemented yet but might be handy in future). **To understand how we treat your personal information, see our [Privacy Policy](https://github.com/Nishant1500/Gifts-Bot/blob/main/PRIVACY_POLICY.md)**.
+
+📌 Important Info
+---
+
+### 🕵🏻‍♀️️ [Privacy Policy](https://github.com/Nishant1500/Gifts-Bot/blob/main/PRIVACY_POLICY.md)
+### 🤝🏻 [Terms of Service](https://github.com/Nishant1500/Gifts-Bot/blob/main/TERMS_OF_SERVICE.md)
+
+## Slash Commands
+Here are short descriptions of each of these slash commands:
+
+`/giveaway start` - This command is used to start a new giveaway in a Discord server.
+
+`/giveaway end` - This command is used to end an ongoing giveaway in a Discord server.
+
+`/giveaway reroll` - This command is used to select a new winner for an ongoing giveaway in a Discord server.
+
+`/ping` - This command is used to test the latency (or delay) of the bot's connection to the Discord server. When the command is run, the bot will send a message with the current latency.
+
+`/secretsanta signup` - This command is used to sign up for a Secret Santa event in a Discord server.
+
+`/secretsanta list` - This command is used to view a list of users who have signed up for a Secret Santa event in a Discord server. **(Requires "Manage Events" Permission)**
+
+`/secretsanta leave` - This command is used to remove oneself from a Secret Santa event in a Discord server.
+
+`/secretsanta message` - This command is used to send a message to the your partner in a Secret Santa event.
+
+`/secretsanta setwishlist` - This command is used to set or update the wishlist for your profile.
+
+`/secertsanta end` - This command is used to end a Secret Santa event in a Discord server. **(Requires "Manage Events" Permission)**
+
+`/secretsanta profile` - This command is used to view the profile of a user participating in a Secret Santa event in a Discord server. (limited to viewing your partner's profile only)
+
+`/secertsanta start` - This command is used to start a new Secret Santa event in a Discord server. **(Requires "Manage Events" Permission)**
 
 ## Built With
 

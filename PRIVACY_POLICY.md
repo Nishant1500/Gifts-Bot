@@ -4,7 +4,7 @@ The use of this application ("Gifts Bot") in a server requires the collection of
 
 ## Access to Data
 
-Access to Data is only permitted to Bot's developers, and only in the scope required for the development, testing, and implementation of features for Bot. Data is not sold, provided to, or shared with any third party, except where required by law or a Terms of Service agreement. You can view the data upon request from [`@Nishant1500#4796`](https://discord.com/users/908563963392958464) or use `/profile` slash command to see the **[Request My Data]** button.
+Access to Data is only permitted to Bot's developers, and only in the scope required for the development, testing, and implementation of features for Bot. Data is not sold, provided to, or shared with any third party, except where required by law or a Terms of Service agreement. You can view the data upon request from [`@Nishant1500#4796`](https://discord.com/users/908563963392958464) or use `/requestdata` slash command to see the **Request My Data** button.
 
 ## Storage of Data
 
@@ -16,7 +16,9 @@ At any time, you have the right to request to view the Data pertaining to your D
 
 ## Data Collection
 
-The bot collects ``User ID`` and ``Guild ID`` which are required for the proper functioning of the bot. Along with this the bot stores ``Message Count`` for every user. It is assured that the bot doesn't store or use message content for any purpose.
+The bot collects `User_ID` and `Guild_ID` which are required for the proper functioning of the bot. The bot may also collect `SERVER_SUBSCRIPTION_INSIGHTS` and `SERVER_INSIGHTS`. Along with those **Command Usage** also gets stored and vanishes after 3 days.
+
+Command Usage logs conatins `USER ID`, `GUILD ID`, `TIME`, `COMMAND_NAME`. **It is assured that the bot doesn't store or use message content for any purpose.**
 
 ## Underage Users
 
