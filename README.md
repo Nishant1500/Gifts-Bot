@@ -43,10 +43,10 @@ So why wait? Add Gifts Bot to your Discord server today and make all your holida
 📌 Important Info
 ---
 
-### 🕵🏻‍♀️️ [Privacy Policy](https://github.com/Nishant1500/Gifts-Bot/blob/main/PRIVACY_POLICY.md)
-### 🤝🏻 [Terms of Service](https://github.com/Nishant1500/Gifts-Bot/blob/main/TERMS_OF_SERVICE.md)
+- 🕵🏻‍♀️️ [**Privacy Policy**](https://github.com/Nishant1500/Gifts-Bot/blob/main/PRIVACY_POLICY.md)
+- 🤝🏻 [**Terms of Service**](https://github.com/Nishant1500/Gifts-Bot/blob/main/TERMS_OF_SERVICE.md)
 
-## Slash Commands
+## ⚡ Slash Commands
 Here are short descriptions of each of these slash commands:
 
 `/giveaway start` - This command is used to start a new giveaway in a Discord server.
@@ -73,18 +73,18 @@ Here are short descriptions of each of these slash commands:
 
 `/secertsanta start` - This command is used to start a new Secret Santa event in a Discord server. **(Requires "Manage Events" Permission)**
 
-## Built With
+## 💻 Built With
 
 - [Discord.js](https://discord.js.org/)
 
-## Contributing
+## ✋🏻 Contributing
 
 Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 * If you have suggestions for adding or removing projects, feel free to [open an issue](https://github.com/Nishant1500/Gifts-Bot/issues/new) to discuss it, or directly create a pull request after you edit the *README.md* file with necessary changes.
 * Please make sure you check your spelling and grammar.
 * Create individual PR for each suggestion.
 
-### Creating A Pull Request
+### 📦 Creating A Pull Request
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
@@ -92,11 +92,11 @@ Contributions are what make the open source community such an amazing place to b
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## License
+## 📜 License
 
 Distributed under the MIT License. See [LICENSE](https://github.com/Nishant1500/Gifts-Bot/blob/main/LICENSE.md) for more information.
 
-## Acknowledgements
+## 🙏🏻 Acknowledgements
 
 * [Androz2091](https://github.com/Androz2091/discord-giveaways): For making such an awesome package :)
 * [ZeroDiscord](https://github.com/ZeroDiscord/): For the base template code for this bot.
