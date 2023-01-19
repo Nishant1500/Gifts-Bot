@@ -14,6 +14,7 @@
     "discord.js": "^14.6.0",
     "discordbotlist": "^1.0.0",
     "forever-monitor": "^3.0.3",
+    "js-beautify": "^1.14.7",
     "lodash": "^4.17.21",
     "mongoose": "^6.8.2",
     "ms": "^3.0.0-canary.1",

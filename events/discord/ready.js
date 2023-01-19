@@ -1,3 +1,4 @@
+require('dotenv').config()
 const { ActivityType, REST, Routes } = require('discord.js');
 const chalk = require('chalk')
 const whitelistModel = require('../../schema/whitelist.js');

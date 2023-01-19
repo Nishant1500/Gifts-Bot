@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const Discord = require("discord.js")
 const { Client, GatewayIntentBits, Partials } = require("discord.js");
 const { AutoPoster } = require('topgg-autoposter');
